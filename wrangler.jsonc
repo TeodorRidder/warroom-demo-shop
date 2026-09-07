@@ -1,0 +1,8 @@
+{
+  "name": "warroom-demo-shop",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "dev": {
+    "port": 8798
+  }
+}

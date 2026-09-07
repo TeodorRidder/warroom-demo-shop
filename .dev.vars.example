@@ -1,0 +1,5 @@
+# Copy to .dev.vars for `npm run dev`. Never commit .dev.vars.
+# Local War Room (`npm run dev` in ../warroom). Leave both unset to only log errors.
+WARROOM_URL=http://localhost:8797
+# Same value as INGEST_TOKEN in War Room's .env
+WARROOM_INGEST_TOKEN=

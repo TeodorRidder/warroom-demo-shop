@@ -1,0 +1,20 @@
+{
+  "name": "warroom-demo-shop",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --test-scheduled",
+    "typecheck": "tsc --noEmit",
+    "deploy": "npm run typecheck && wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261001.1",
+    "typescript": "^7.0.2",
+    "wrangler": "4.147.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "description": "Brewline shop API: catalogue, search, checkout, shipping and recommendations on Cloudflare Workers"
+}
