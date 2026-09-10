@@ -19,3 +19,11 @@ export const findProduct = (id: string) => PRODUCTS.find(p => p.id === id);
 // USD → other currency.
 export const RATES: Record<string, number> = { USD: 1, EUR: 0.92, GBP: 0.79, SEK: 10.6 };
 export const SUPPORTED_CURRENCIES = ["USD", "EUR", "GBP", "SEK"];
+
+// Delivery days and today's dispatch cutoff (UTC) per country.
+export const SHIPPING_ZONES: Record<string, { days: number; cutoff: string }> = {
+  SE: { days: 2, cutoff: "16:00" },
+  DK: { days: 2, cutoff: "16:00" },
+  DE: { days: 4, cutoff: "15:00" },
+  US: { days: 7, cutoff: "14:00" },
+};
