@@ -4,5 +4,14 @@
   "compatibility_date": "2026-08-01",
   "dev": {
     "port": 8798
-  }
+  },
+  // Plain vars. WARROOM_INGEST_TOKEN is a secret (`npx wrangler secret put WARROOM_INGEST_TOKEN`; locally in .dev.vars).
+  "vars": {
+    "SERVICE_NAME": "brewline-shop",
+    "WARROOM_URL": "https://warroom.hlt-coshell.workers.dev"
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "TRACKER", "class_name": "ErrorTracker" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ErrorTracker"] }]
 }
