@@ -22,3 +22,10 @@ test("searchProducts matches on the product name", () => {
   assert.ok(result.items.length > 0);
   for (const p of result.items) assert.match(p.name.toLowerCase(), /beans/);
 });
+
+test("searchProducts applies a category filter", () => {
+  const filter = encodeURIComponent(JSON.stringify({ category: "milk" }));
+  const result = searchProducts(url(`/search?q=&filter=${filter}`));
+  assert.ok(result.items.length > 0);
+  for (const p of result.items) assert.equal(p.category, "milk");
+});

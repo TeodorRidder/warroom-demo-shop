@@ -11,8 +11,16 @@ export function listProducts(url: URL) {
   return { page, pages, items: PRODUCTS.slice(start, start + PAGE_SIZE) };
 }
 
+type SearchFilter = { category?: string; maxPrice?: number };
+
 export function searchProducts(url: URL) {
   const query = (url.searchParams.get("q") ?? "").toLowerCase();
-  const items = PRODUCTS.filter(p => p.name.toLowerCase().includes(query));
-  return { query, items };
+  const filter: SearchFilter = JSON.parse(url.searchParams.get("filter") ?? "{}");
+  const items = PRODUCTS.filter(
+    p =>
+      p.name.toLowerCase().includes(query) &&
+      (!filter.category || p.category === filter.category) &&
+      (filter.maxPrice === undefined || p.price <= filter.maxPrice),
+  );
+  return { query, filter, items };
 }
