@@ -2,7 +2,7 @@
 
 export type Product = { id: string; name: string; price: number; stock: number; category: string; discount: { percent: number } };
 
-export const PRODUCTS: Product[] = [
+const OWN_PRODUCTS: Product[] = [
   { id: "p01", name: "Espresso beans 1 kg", price: 24.9, stock: 40, category: "coffee", discount: { percent: 10 } },
   { id: "p02", name: "Decaf beans 500 g", price: 14, stock: 22, category: "coffee", discount: { percent: 15 } },
   { id: "p03", name: "Filter papers (100)", price: 6.5, stock: 120, category: "gear", discount: { percent: 0 } },
@@ -13,6 +13,15 @@ export const PRODUCTS: Product[] = [
   { id: "p08", name: "Barista milk 1 L", price: 3.9, stock: 48, category: "milk", discount: { percent: 0 } },
   { id: "p09", name: "Descaler", price: 9.5, stock: 30, category: "care", discount: { percent: 20 } },
 ];
+
+// Gear from our supplier, imported from their JSON product feed.
+const SUPPLIER_FEED = `[
+  { "id": "s01", "name": "Pour-over kettle", "price": 59, "stock": 8, "category": "gear", "discount": null },
+  { "id": "s02", "name": "Cold brew bottle", "price": 21, "stock": 14, "category": "gear", "discount": null },
+  { "id": "s03", "name": "Gift card 50", "price": 50, "stock": 999, "category": "gift", "discount": { "percent": 0 } }
+]`;
+
+export const PRODUCTS: Product[] = [...OWN_PRODUCTS, ...(JSON.parse(SUPPLIER_FEED) as Product[])];
 
 export const findProduct = (id: string) => PRODUCTS.find(p => p.id === id);
 
