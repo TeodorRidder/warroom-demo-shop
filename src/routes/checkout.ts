@@ -1,11 +1,12 @@
 import { findProduct, RATES, SUPPORTED_CURRENCIES } from "../data.ts";
 import { HttpError } from "../http.ts";
+import { redeemCoupon } from "./coupons.ts";
 import { charge } from "./payments.ts";
 
 export type OrderLine = { productId: string; qty: number };
-export type Order = { items: OrderLine[]; currency?: string };
+export type Order = { items: OrderLine[]; currency?: string; coupon?: string };
 
-// Order total in the customer's currency, after product discounts.
+// Order total in the customer's currency, after product discounts and the coupon.
 export function priceOrder(order: Order | null) {
   if (!order || !Array.isArray(order.items) || order.items.length === 0) throw new HttpError(400, "cart is empty");
   const currency = order.currency ?? "USD";
@@ -20,7 +21,8 @@ export function priceOrder(order: Order | null) {
     subtotal += unitPrice * line.qty;
   }
 
-  const total = toCurrency(subtotal, currency);
+  const couponPercent = order.coupon ? redeemCoupon(order.coupon) : 0;
+  const total = toCurrency(subtotal * (1 - couponPercent / 100), currency);
   if (!Number.isFinite(total)) throw new Error(`Invalid order total: ${total}`);
   return { currency, total: Math.round(total * 100) / 100 };
 }

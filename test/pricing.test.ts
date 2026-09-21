@@ -16,6 +16,11 @@ test("converts the total to EUR", () => {
   assert.deepEqual(result, { currency: "EUR", total: 30.36 });
 });
 
+test("applies a coupon after product discounts", () => {
+  const result = priceOrder({ items: [{ productId: "p06", qty: 2 }], coupon: "AUTUMN25" });
+  assert.deepEqual(result, { currency: "USD", total: 18 });
+});
+
 test("rejects an empty cart", () => {
   assert.throws(() => priceOrder({ items: [] }), isHttp(400));
 });
