@@ -1,6 +1,7 @@
 import { HttpError, json } from "./http.ts";
 import { listProducts, searchProducts } from "./routes/catalog.ts";
 import { checkout } from "./routes/checkout.ts";
+import { recommend } from "./routes/recommendations.ts";
 import { estimateDelivery } from "./routes/shipping.ts";
 import { ErrorTracker, type CapturedError, type Severity, type TrackerEnv } from "./tracker.ts";
 
@@ -22,6 +23,7 @@ const ROUTES: Route[] = [
   { method: "GET", path: "/api/search", handler: "searchProducts", file: "src/routes/catalog.ts", severity: "SEV3", handle: (_, url) => searchProducts(url) },
   { method: "POST", path: "/api/checkout", handler: "checkout", file: "src/routes/checkout.ts", severity: "SEV1", handle: request => checkout(request) },
   { method: "GET", path: "/api/shipping/estimate", handler: "estimateDelivery", file: "src/routes/shipping.ts", severity: "SEV2", handle: (_, url) => estimateDelivery(url) },
+  { method: "GET", path: "/api/recommendations", handler: "recommend", file: "src/routes/recommendations.ts", severity: "SEV3", handle: (_, url) => recommend(url) },
 ];
 
 const tracker = (env: Env) => env.TRACKER.get(env.TRACKER.idFromName("main"));

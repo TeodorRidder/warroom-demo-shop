@@ -31,6 +31,12 @@ export const SUPPORTED_CURRENCIES = ["USD", "EUR", "GBP", "SEK"];
 
 export const COUPONS: Record<string, number> = { WELCOME10: 10, AUTUMN25: 25 };
 
+export const USERS: Record<string, { name: string; orders: string[] }> = {
+  u1: { name: "Demo customer 1", orders: ["p01", "p04", "p07", "p03"] },
+  u2: { name: "Demo customer 2", orders: [] },
+  u3: { name: "Demo customer 3", orders: ["p05", "p08"] },
+};
+
 // Delivery days and today's dispatch cutoff (UTC) per country.
 export const SHIPPING_ZONES: Record<string, { days: number; cutoff: string }> = {
   SE: { days: 2, cutoff: "16:00" },
