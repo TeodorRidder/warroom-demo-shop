@@ -43,4 +43,5 @@ export const SHIPPING_ZONES: Record<string, { days: number; cutoff: string }> = 
   DK: { days: 2, cutoff: "16:00" },
   DE: { days: 4, cutoff: "15:00" },
   US: { days: 7, cutoff: "14:00" },
+  NO: { days: 3, cutoff: "5pm" },
 };
