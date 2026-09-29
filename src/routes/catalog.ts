@@ -7,8 +7,9 @@ export function listProducts(url: URL) {
   const page = Number(url.searchParams.get("page") ?? "1");
   if (!Number.isInteger(page) || page < 1) throw new HttpError(400, "page must be a positive integer");
   const pages = Math.ceil(PRODUCTS.length / PAGE_SIZE);
-  const start = (page - 1) * PAGE_SIZE;
-  return { page, pages, items: PRODUCTS.slice(start, start + PAGE_SIZE) };
+  const start = page * PAGE_SIZE;
+  const items = PRODUCTS.slice(start, start + PAGE_SIZE);
+  return { page, pages, items, cursor: items[items.length - 1].id };
 }
 
 type SearchFilter = { category?: string; maxPrice?: number };
