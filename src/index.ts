@@ -1,13 +1,15 @@
 import { HttpError, json } from "./http.ts";
+import { page } from "./page.ts";
 import { listProducts, searchProducts } from "./routes/catalog.ts";
 import { checkout } from "./routes/checkout.ts";
 import { recommend } from "./routes/recommendations.ts";
 import { estimateDelivery } from "./routes/shipping.ts";
 import { ErrorTracker, type CapturedError, type Severity, type TrackerEnv } from "./tracker.ts";
+import { runTraffic, SCENARIOS } from "./traffic.ts";
 
 export { ErrorTracker };
 
-type Env = TrackerEnv & { TRACKER: DurableObjectNamespace<ErrorTracker> };
+type Env = TrackerEnv & { TRACKER: DurableObjectNamespace<ErrorTracker>; TRAFFIC_PER_MINUTE?: string };
 
 type Route = {
   method: "GET" | "POST";
@@ -33,7 +35,12 @@ const normalize = (message: string) => message.replace(/"[^"]*"|'[^']*'/g, '"?"'
 
 async function handle(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const url = new URL(request.url);
+  if (url.pathname === "/" && request.method === "GET") return new Response(page(SCENARIOS), { headers: { "Content-Type": "text/html; charset=utf-8" } });
   if (url.pathname === "/api/errors" && request.method === "GET") return json({ warroom: env.WARROOM_URL ?? null, issues: await tracker(env).list() });
+  if (url.pathname === "/api/traffic" && request.method === "POST") {
+    const count = Math.min(100, Math.max(1, Number(url.searchParams.get("n") ?? "20") || 20));
+    return json(await runTraffic(r => handle(r, env, ctx), url.origin, count));
+  }
   if (url.pathname === "/health") return json({ ok: true });
 
   const route = ROUTES.find(r => r.path === url.pathname);
@@ -57,7 +64,7 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext): Promis
       handler: route.handler,
       file: route.file,
       severity: route.severity,
-      region: String((request.cf as { colo?: string } | undefined)?.colo ?? "local"),
+      region: request.headers.get("x-synthetic") ? "synthetic" : String((request.cf as { colo?: string } | undefined)?.colo ?? "local"),
       at: started,
     };
     console.error(JSON.stringify({ level: "error", ref, route: captured.route, error: `${err.name}: ${err.message}`, stack: err.stack }));
@@ -68,4 +75,11 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext): Promis
 
 export default {
   fetch: (request, env, ctx) => handle(request, env, ctx),
+  // Every minute: a burst of synthetic customers, so problems show up even when real traffic is low.
+  scheduled: async (_controller, env, ctx) => {
+    const count = Number(env.TRAFFIC_PER_MINUTE ?? "20");
+    if (!(count > 0)) return;
+    const result = await runTraffic(r => handle(r, env, ctx), "https://synthetic.local", Math.min(100, count));
+    console.log(JSON.stringify({ level: "info", msg: "synthetic traffic", requests: result.requests, errors: result.errors }));
+  },
 } satisfies ExportedHandler<Env>;

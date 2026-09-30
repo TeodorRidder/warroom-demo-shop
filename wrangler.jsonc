@@ -5,10 +5,15 @@
   "dev": {
     "port": 8798
   },
+  // Synthetic customers every minute, so problems show up even when real traffic is low.
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
   // Plain vars. WARROOM_INGEST_TOKEN is a secret (`npx wrangler secret put WARROOM_INGEST_TOKEN`; locally in .dev.vars).
   "vars": {
     "SERVICE_NAME": "brewline-shop",
-    "WARROOM_URL": "https://warroom.hlt-coshell.workers.dev"
+    "WARROOM_URL": "https://warroom.hlt-coshell.workers.dev",
+    "TRAFFIC_PER_MINUTE": "20"
   },
   "durable_objects": {
     "bindings": [{ "name": "TRACKER", "class_name": "ErrorTracker" }]

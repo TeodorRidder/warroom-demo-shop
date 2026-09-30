@@ -7,7 +7,8 @@
     "dev": "wrangler dev --test-scheduled",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --no-warnings --test \"test/*.test.ts\"",
-    "deploy": "npm run typecheck && npm test && wrangler deploy"
+    "deploy": "npm run typecheck && npm test && wrangler deploy",
+    "traffic": "node scripts/traffic.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261001.1",
