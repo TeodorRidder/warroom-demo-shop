@@ -1,5 +1,5 @@
 // Payment provider client. The provider is simulated in this environment: no real money moves.
-const TIMEOUT_MS = 2000;
+const TIMEOUT_MS = 400;
 
 export class PaymentTimeoutError extends Error {
   name = "PaymentTimeoutError";
