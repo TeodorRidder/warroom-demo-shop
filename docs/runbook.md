@@ -5,7 +5,7 @@
 1. Open the incident in War Room (the link is also on the ops console). The title is `<Error> in <route>: <message>`, and the location names the handler and its file.
 2. Check what changed recently: `git log --stat -10` and the deploys in the Cloudflare dashboard. Most incidents are caused by the last change to the file in the incident's location.
 3. Find the stack trace: `npx wrangler tail --format pretty` and search for the `ref` from the 500 response, or for the route.
-4. Reproduce locally with `npm run dev` and the matching journey on the ops console (`/`).
+4. Reproduce locally with `npm run dev` and the matching journey on the ops console (`/ops`).
 
 ## Severity
 

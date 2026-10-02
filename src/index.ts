@@ -4,6 +4,7 @@ import { listProducts, searchProducts } from "./routes/catalog.ts";
 import { checkout } from "./routes/checkout.ts";
 import { recommend } from "./routes/recommendations.ts";
 import { estimateDelivery } from "./routes/shipping.ts";
+import { storefront } from "./storefront.ts";
 import { ErrorTracker, type CapturedError, type Severity, type TrackerEnv } from "./tracker.ts";
 import { runTraffic, SCENARIOS } from "./traffic.ts";
 
@@ -35,7 +36,9 @@ const normalize = (message: string) => message.replace(/"[^"]*"|'[^']*'/g, '"?"'
 
 async function handle(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const url = new URL(request.url);
-  if (url.pathname === "/" && request.method === "GET") return new Response(page(SCENARIOS), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+  const html = (body: string) => new Response(body, { headers: { "Content-Type": "text/html; charset=utf-8" } });
+  if (url.pathname === "/" && request.method === "GET") return html(storefront());
+  if (url.pathname === "/ops" && request.method === "GET") return html(page(SCENARIOS));
   if (url.pathname === "/api/errors" && request.method === "GET") return json({ warroom: env.WARROOM_URL ?? null, issues: await tracker(env).list() });
   if (url.pathname === "/api/traffic" && request.method === "POST") {
     const count = Math.min(100, Math.max(1, Number(url.searchParams.get("n") ?? "20") || 20));

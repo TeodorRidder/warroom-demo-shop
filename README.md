@@ -2,7 +2,7 @@
 
 Backend for the Brewline online coffee shop: catalogue, search, checkout, shipping estimates and recommendations. It runs on Cloudflare Workers.
 
-Live: https://warroom-demo-shop.teodor-riddervold.workers.dev (the ops console is at `/`)
+Live: https://warroom-demo-shop.teodor-riddervold.workers.dev (ops console: `/ops`)
 
 ## Endpoints
 
@@ -13,6 +13,7 @@ Live: https://warroom-demo-shop.teodor-riddervold.workers.dev (the ops console i
 | POST | `/api/checkout` | `checkout` (`src/routes/checkout.ts`) | Prices the cart (discounts, coupon, currency) and charges the payment provider |
 | GET | `/api/shipping/estimate?country=<code>` | `estimateDelivery` (`src/routes/shipping.ts`) | Dispatch date and delivery date for a country |
 | GET | `/api/recommendations?user=<id>` | `recommend` (`src/routes/recommendations.ts`) | "More from your favourite category" |
+| GET | `/` | `storefront` (`src/storefront.ts`) | The web shop |
 | GET | `/health` | | Health check |
 
 Checkout body:
@@ -40,7 +41,7 @@ npm run typecheck
 - **Crash reports** (`src/tracker.ts`): crashes are grouped into issues by route, error type and message. The first crash of an issue opens an incident in [War Room](https://warroom.hlt-coshell.workers.dev); after that, the count is sent once a minute. Once an incident is resolved in War Room, a new crash of the same issue opens a new incident.
 - **Synthetic customers** (`src/traffic.ts`): a cron trigger runs 20 customer journeys every minute (`TRAFFIC_PER_MINUTE`), so problems show up even when real traffic is low.
 - **Logs**: every crash is logged as one JSON line with its `ref` and stack trace: `npx wrangler tail`.
-- **Ops console** (`/`): run a single journey, send a burst of synthetic customers, and see open issues with links to their War Room incidents.
+- **Ops console** (`/ops`): run a single journey, send a burst of synthetic customers, and see open issues with links to their War Room incidents.
 
 ## Configuration
 
@@ -63,6 +64,7 @@ src/routes/           one file per feature
 src/data.ts           catalogue, rates, coupons, shipping zones
 src/tracker.ts        crash grouping and War Room reporting (Durable Object)
 src/traffic.ts        synthetic customer journeys
-src/page.ts           ops console
+src/storefront.ts     web shop (`/`)
+src/page.ts           ops console (`/ops`)
 test/                 unit tests
 ```
