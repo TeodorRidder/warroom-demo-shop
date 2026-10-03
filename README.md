@@ -38,7 +38,7 @@ npm run typecheck
 
 ## Monitoring
 
-- **Crash reports** (`src/tracker.ts`): crashes are grouped into issues by route, error type and message. The first crash of an issue opens an incident in [War Room](https://warroom.hlt-coshell.workers.dev); after that, the count is sent once a minute. Once an incident is resolved in War Room, a new crash of the same issue opens a new incident.
+- **Crash reports** (`src/tracker.ts`): crashes are grouped into issues by route, error type and message. The first crash of an issue opens an incident in [War Room](https://warroom.hlt-coshell.workers.dev), linked to this repo (`GITHUB_REPO`); after that, the count is sent once a minute. Once an incident is resolved in War Room, a new crash of the same issue opens a new incident.
 - **Synthetic customers** (`src/traffic.ts`): a cron trigger runs 20 customer journeys every minute (`TRAFFIC_PER_MINUTE`), so problems show up even when real traffic is low.
 - **Logs**: every crash is logged as one JSON line with its `ref` and stack trace: `npx wrangler tail`.
 - **Ops console** (`/ops`): run a single journey, send a burst of synthetic customers, and see open issues with links to their War Room incidents.
@@ -48,6 +48,7 @@ npm run typecheck
 | Name | Kind | What |
 | --- | --- | --- |
 | `SERVICE_NAME` | var | Service name in War Room incidents |
+| `GITHUB_REPO` | var | This repo (`owner/name`). Incidents link to it, so War Room's agent reads this code and opens fix PRs here |
 | `WARROOM_URL` | var | War Room base URL |
 | `WARROOM_INGEST_TOKEN` | secret | Bearer token for War Room's ingest API |
 | `TRAFFIC_PER_MINUTE` | var | Synthetic customers per minute; `"0"` turns them off |

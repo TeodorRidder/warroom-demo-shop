@@ -41,7 +41,7 @@ type Issue = {
   sample: Omit<CapturedError, "fingerprint" | "at">;
 };
 
-export type TrackerEnv = { SERVICE_NAME?: string; WARROOM_URL?: string; WARROOM_INGEST_TOKEN?: string };
+export type TrackerEnv = { SERVICE_NAME?: string; GITHUB_REPO?: string; WARROOM_URL?: string; WARROOM_INGEST_TOKEN?: string };
 
 const FLUSH_MS = 60_000;
 
@@ -103,6 +103,8 @@ export class ErrorTracker extends DurableObject<TrackerEnv> {
           suspect: `${issue.sample.handler} · ${issue.sample.file}`.slice(0, 60),
           region: issue.sample.region.slice(0, 60),
         },
+        // The incident links to this repo: War Room's agent investigates its code and opens fix PRs there.
+        ...(this.env.GITHUB_REPO ? { repo: this.env.GITHUB_REPO } : {}),
         tags: [this.env.SERVICE_NAME ?? "demo-shop", issue.sample.handler, issue.errorName, "5xx"].map(t => t.toLowerCase().slice(0, 30)),
         occurrences: { total: sent, perMinute: sent },
       });

@@ -12,6 +12,7 @@
   // Plain vars. WARROOM_INGEST_TOKEN is a secret (`npx wrangler secret put WARROOM_INGEST_TOKEN`; locally in .dev.vars).
   "vars": {
     "SERVICE_NAME": "brewline-shop",
+    "GITHUB_REPO": "TeodorRidder/warroom-demo-shop",
     "WARROOM_URL": "https://warroom.hlt-coshell.workers.dev",
     "TRAFFIC_PER_MINUTE": "20"
   },
