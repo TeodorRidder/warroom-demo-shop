@@ -11,7 +11,10 @@ export function recommend(url: URL) {
     const category = findProduct(id)?.category;
     if (category) counts.set(category, (counts.get(category) ?? 0) + 1);
   }
-  const [favorite] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
-  const items = PRODUCTS.filter(p => p.category === favorite && !user.orders.includes(p.id)).slice(0, 3);
+  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  const favorite = sorted[0]?.[0];
+  const items = favorite 
+    ? PRODUCTS.filter(p => p.category === favorite && !user.orders.includes(p.id)).slice(0, 3)
+    : [];
   return { favorite, items };
 }
