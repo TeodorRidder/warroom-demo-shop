@@ -17,7 +17,8 @@ export function priceOrder(order: Order | null) {
     const product = findProduct(line.productId);
     if (!product) throw new HttpError(404, `no product ${line.productId}`);
     if (!Number.isInteger(line.qty) || line.qty < 1) throw new HttpError(400, "qty must be a positive integer");
-    const unitPrice = product.price * (1 - product.discount.percent / 100);
+    const discountPercent = product.discount ? product.discount.percent : 0;
+    const unitPrice = product.price * (1 - discountPercent / 100);
     subtotal += unitPrice * line.qty;
   }
 
