@@ -62,7 +62,7 @@ export const page = (scenarios: Scenario[]) => `<!doctype html>
   };
   document.querySelectorAll("button[data-i]").forEach(b => b.addEventListener("click", async () => {
     const s = scenarios[b.dataset.i];
-    const res = await fetch(s.path, { method: s.method, headers: { "Content-Type": "application/json" }, body: s.body === undefined ? undefined : JSON.stringify(s.body) });
+    const res = await fetch(s.path, { method: s.method, headers: { "Content-Type": "application/json", "x-traffic-source": "ops" }, body: s.body === undefined ? undefined : JSON.stringify(s.body) });
     show(s.name, res.status, await res.json().catch(() => null));
     setTimeout(loadIssues, 800);
   }));

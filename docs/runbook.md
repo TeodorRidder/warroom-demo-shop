@@ -19,7 +19,7 @@
 
 - **Roll back**: `npx wrangler rollback` returns to the previous deploy. Do this first if the incident started with a deploy.
 - **Fix forward**: small fix + test, open a PR, and `npm run deploy` from `main` once it's merged.
-- **Synthetic customers** keep firing every minute. Set `TRAFFIC_PER_MINUTE` to `"0"` and deploy if they make an incident noisy.
+- **Synthetic customers** only run from the ops console unless `TRAFFIC_PER_MINUTE` is above `"0"`. Only ops console crashes open incidents while `REPORT_CRASHES` is `"ops"`.
 
 ## Dependencies
 

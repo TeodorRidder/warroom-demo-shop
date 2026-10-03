@@ -10,7 +10,7 @@ import { runTraffic, SCENARIOS } from "./traffic.ts";
 
 export { ErrorTracker };
 
-type Env = TrackerEnv & { TRACKER: DurableObjectNamespace<ErrorTracker>; TRAFFIC_PER_MINUTE?: string };
+type Env = TrackerEnv & { TRACKER: DurableObjectNamespace<ErrorTracker>; TRAFFIC_PER_MINUTE?: string; REPORT_CRASHES?: string };
 
 type Route = {
   method: "GET" | "POST";
@@ -42,7 +42,7 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext): Promis
   if (url.pathname === "/api/errors" && request.method === "GET") return json({ warroom: env.WARROOM_URL ?? null, issues: await tracker(env).list() });
   if (url.pathname === "/api/traffic" && request.method === "POST") {
     const count = Math.min(100, Math.max(1, Number(url.searchParams.get("n") ?? "20") || 20));
-    return json(await runTraffic(r => handle(r, env, ctx), url.origin, count));
+    return json(await runTraffic(r => handle(r, env, ctx), url.origin, count, "ops"));
   }
   if (url.pathname === "/health") return json({ ok: true });
 
@@ -67,11 +67,13 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext): Promis
       handler: route.handler,
       file: route.file,
       severity: route.severity,
-      region: request.headers.get("x-synthetic") ? "synthetic" : String((request.cf as { colo?: string } | undefined)?.colo ?? "local"),
+      region: request.headers.get("x-traffic-source") ? "synthetic" : String((request.cf as { colo?: string } | undefined)?.colo ?? "local"),
       at: started,
     };
-    console.error(JSON.stringify({ level: "error", ref, route: captured.route, error: `${err.name}: ${err.message}`, stack: err.stack }));
-    ctx.waitUntil(tracker(env).capture(captured).catch(e => console.error(JSON.stringify({ level: "error", msg: "error tracker failed", error: String(e) }))));
+    // REPORT_CRASHES="ops": only crashes from journeys run on the ops console open War Room incidents.
+    const reported = env.REPORT_CRASHES !== "ops" || request.headers.get("x-traffic-source") === "ops";
+    console.error(JSON.stringify({ level: "error", ref, route: captured.route, error: `${err.name}: ${err.message}`, reported, stack: err.stack }));
+    if (reported) ctx.waitUntil(tracker(env).capture(captured).catch(e => console.error(JSON.stringify({ level: "error", msg: "error tracker failed", error: String(e) }))));
     return json({ error: "internal error", ref }, 500);
   }
 }
@@ -82,7 +84,7 @@ export default {
   scheduled: async (_controller, env, ctx) => {
     const count = Number(env.TRAFFIC_PER_MINUTE ?? "20");
     if (!(count > 0)) return;
-    const result = await runTraffic(r => handle(r, env, ctx), "https://synthetic.local", Math.min(100, count));
+    const result = await runTraffic(r => handle(r, env, ctx), "https://synthetic.local", Math.min(100, count), "cron");
     console.log(JSON.stringify({ level: "info", msg: "synthetic traffic", requests: result.requests, errors: result.errors }));
   },
 } satisfies ExportedHandler<Env>;

@@ -29,19 +29,20 @@ const pick = () => {
   return SCENARIOS[0];
 };
 
-export const scenarioRequest = (origin: string, s: Scenario) =>
+// `source`: who sent the journey, "ops" (the ops console) or "cron" (the scheduled run).
+export const scenarioRequest = (origin: string, s: Scenario, source: "ops" | "cron") =>
   new Request(`${origin}${s.path}`, {
     method: s.method,
-    headers: { "Content-Type": "application/json", "x-synthetic": "1" },
+    headers: { "Content-Type": "application/json", "x-traffic-source": source },
     body: s.body === undefined ? undefined : JSON.stringify(s.body),
   });
 
 // Runs `count` random requests through the shop's own handler; returns status codes per scenario.
-export async function runTraffic(handle: (request: Request) => Promise<Response>, origin: string, count: number) {
+export async function runTraffic(handle: (request: Request) => Promise<Response>, origin: string, count: number, source: "ops" | "cron") {
   const results = await Promise.all(
     Array.from({ length: count }, async () => {
       const s = pick();
-      const response = await handle(scenarioRequest(origin, s));
+      const response = await handle(scenarioRequest(origin, s, source));
       return { scenario: s.name, status: response.status };
     }),
   );

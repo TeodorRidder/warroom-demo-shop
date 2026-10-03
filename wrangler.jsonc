@@ -14,7 +14,10 @@
     "SERVICE_NAME": "brewline-shop",
     "GITHUB_REPO": "TeodorRidder/warroom-demo-shop",
     "WARROOM_URL": "https://warroom.hlt-coshell.workers.dev",
-    "TRAFFIC_PER_MINUTE": "20"
+    // Scheduled synthetic customers are off; run journeys from the ops console instead.
+    "TRAFFIC_PER_MINUTE": "0",
+    // "ops": only crashes from the ops console open War Room incidents. "all": every crash does.
+    "REPORT_CRASHES": "ops"
   },
   "durable_objects": {
     "bindings": [{ "name": "TRACKER", "class_name": "ErrorTracker" }]
