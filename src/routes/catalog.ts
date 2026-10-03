@@ -16,7 +16,12 @@ type SearchFilter = { category?: string; maxPrice?: number };
 
 export function searchProducts(url: URL) {
   const query = (url.searchParams.get("q") ?? "").toLowerCase();
-  const filter: SearchFilter = JSON.parse(url.searchParams.get("filter") ?? "{}");
+  let filter: SearchFilter;
+  try {
+    filter = JSON.parse(url.searchParams.get("filter") ?? "{}");
+  } catch {
+    throw new HttpError(400, "filter must be valid JSON");
+  }
   const items = PRODUCTS.filter(
     p =>
       p.name.toLowerCase().includes(query) &&
