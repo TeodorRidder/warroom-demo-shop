@@ -1,7 +1,6 @@
-import { findProduct, PRODUCTS, USERS } from "../data.ts";
-import { HttpError } from "../http.ts";
+import { HttpError } from "../errors.js";
+import { findProduct, PRODUCTS, USERS } from "../data.js";
 
-// "More from your favourite category": the category the customer has ordered from most.
 export function recommend(url: URL) {
   const user = USERS[url.searchParams.get("user") ?? ""];
   if (!user) throw new HttpError(404, "unknown user");
@@ -11,7 +10,9 @@ export function recommend(url: URL) {
     const category = findProduct(id)?.category;
     if (category) counts.set(category, (counts.get(category) ?? 0) + 1);
   }
-  const [favorite] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+  const entries = [...counts.entries()];
+  if (entries.length === 0) return { favorite: null, items: [] };
+  const [favorite] = entries.sort((a, b) => b[1] - a[1])[0];
   const items = PRODUCTS.filter(p => p.category === favorite && !user.orders.includes(p.id)).slice(0, 3);
   return { favorite, items };
 }
