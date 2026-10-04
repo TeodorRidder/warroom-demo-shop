@@ -27,7 +27,7 @@ export const findProduct = (id: string) => PRODUCTS.find(p => p.id === id);
 
 // USD → other currency.
 export const RATES: Record<string, number> = { USD: 1, EUR: 0.92, GBP: 0.79, SEK: 10.6 };
-export const SUPPORTED_CURRENCIES = ["USD", "EUR", "GBP", "SEK", "NOK"];
+export const SUPPORTED_CURRENCIES = ["USD", "EUR", "GBP", "SEK"];
 
 export const COUPONS: Record<string, number> = { WELCOME10: 10, AUTUMN25: 25 };
 
